@@ -1,5 +1,10 @@
 package cn.jump.kademlia.routing;
 
+import com.google.common.collect.Sets;
+import lombok.Getter;
+
+import java.util.TreeSet;
+
 /**
  * 在Kad中通过使用一个Bucket来保存和当前节点距离在某个范围内
  * 的所有节点列表，比如Bucket#0记录来[1,2)范围内的节点。
@@ -21,6 +26,50 @@ package cn.jump.kademlia.routing;
  *
  * @author JumpTian
  */
+@Getter
 public class Bucket {
 
+    private final TreeSet<Contact> contactSet = Sets.newTreeSet();
+
+    public Bucket() {
+
+    }
+
+    /**
+     * 添加一条路由记录到bucket中
+     *
+     * @param contact 路由记录
+     */
+    public void insert(Contact contact) {
+        if (contactSet.contains(contact)) {
+            // 如果contact中节点已经在本地k-bucket中，则重新设置最近访问时间，
+            // 并按照最近访问时间时间排序
+            contact = remove(contact.getNode().getId());
+            contact.setLastAccess();
+            contactSet.add(contact);
+        } else {
+            // todo
+            // 否则，ping一下列表最上（旧）的一个节点
+            // r如果ping通了，将旧节点放到列表最底，并丢弃新节点
+            // 如果ping不同，删除旧节点，并将新节点放到列表
+            // 从而保证了任意节点的加入和离开都不影响整体网络
+            // 如果当前bucket已满
+        }
+    }
+
+    /**
+     * 根据节点id从路由表中删除Contact，并返回
+     *
+     * @param nodeId 节点id
+     * @return 被删除Contact
+     */
+    public Contact remove(Node.Id nodeId) {
+        for (Contact contact : contactSet) {
+            if (contact.getNode().getId().equals(nodeId)) {
+                contactSet.remove(contact);
+                return contact;
+            }
+        }
+        throw new IllegalStateException("Node not exist");
+    }
 }
