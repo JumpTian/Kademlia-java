@@ -5,6 +5,6 @@ package cn.jump.kademlia.cmd;
  *
  * @author JumpTian
  */
-public class FindRecordCmd implements Cmd {
+public class FindRecordCmd {
 
 }

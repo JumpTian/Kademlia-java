@@ -35,6 +35,10 @@ public class Bucket {
 
     }
 
+    public void insert(Node node) {
+
+    }
+
     /**
      * 添加一条路由记录到bucket中
      *

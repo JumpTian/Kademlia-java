@@ -5,6 +5,6 @@ package cn.jump.kademlia.cmd;
  *
  * @author JumpTian
  */
-public class PingCmd implements Cmd {
+public class PingCmd {
 
 }

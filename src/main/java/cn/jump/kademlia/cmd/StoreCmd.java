@@ -6,6 +6,6 @@ package cn.jump.kademlia.cmd;
  *
  * @author JumpTian
  */
-public class StoreCmd implements Cmd {
+public class StoreCmd {
 
 }

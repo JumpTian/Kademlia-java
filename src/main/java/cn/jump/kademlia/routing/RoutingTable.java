@@ -2,6 +2,7 @@ package cn.jump.kademlia.routing;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.TreeSet;
@@ -23,8 +24,10 @@ import java.util.TreeSet;
  *
  * @author JumpTian
  */
+@Getter
 public class RoutingTable {
 
+    private Node localNode;
     private Bucket[] bucketArr = new Bucket[Node.Id.SPACE];
 
     {
@@ -33,8 +36,19 @@ public class RoutingTable {
         }
     }
 
-    public RoutingTable() {
+    public RoutingTable(Node localNode) {
+        this.localNode = localNode;
+        this.insert(localNode);
+    }
 
+    /**
+     * 向路由表插入一条节点
+     *
+     * @param node 节点
+     */
+    public void insert(Node node) {
+        int idx = getBucketIdx(node);
+        bucketArr[idx].insert(node);
     }
 
     /**
