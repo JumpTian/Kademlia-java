@@ -1,49 +1,90 @@
 package cn.jump.kademlia.cmd;
 
 import cn.jump.kademlia.Endpoint;
+import cn.jump.kademlia.KadConfig;
 import cn.jump.kademlia.handler.FindNodeHandler;
+import cn.jump.kademlia.handler.Handler;
 import cn.jump.kademlia.routing.Node;
 import cn.jump.kademlia.transport.FindNodeMsg;
 import cn.jump.kademlia.transport.Msg;
 import cn.jump.kademlia.transport.TransportServer;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 
 /**
  * 根据节点id查找k个距离最接近节点
  *
  * @author JumpTian
  */
-public class FindNodeCmd {
+@Getter
+public class FindNodeCmd extends AbstractCmd {
 
-    private Endpoint endpoint;
-    private TransportServer transportServer;
+    private final Msg findNodeMsg;
 
-    private FindNodeCmd(Endpoint endpoint, TransportServer transportServer) {
-        this.endpoint = endpoint;
-        this.transportServer = transportServer;
+    private FindNodeCmd(Endpoint endpoint, Node.Id lookupId, TransportServer transportServer) {
+       super(endpoint, lookupId, transportServer);
+        this.findNodeMsg = new FindNodeMsg(endpoint.getLocalNode(), lookupId);
     }
 
-    public static void fire(Endpoint endpoint, TransportServer transportServer) throws IOException {
-        FindNodeCmd cmd = new FindNodeCmd(endpoint, transportServer);
+    public static FindNodeCmd fire(Endpoint endpoint, Node.Id lookupId,
+                                   TransportServer transportServer) throws IOException {
+        FindNodeCmd cmd = new FindNodeCmd(endpoint, lookupId, transportServer);
         cmd.execute();
+        return cmd;
     }
 
     private void execute() throws IOException {
-        List<Node> nodeList = endpoint.getRoutingTable().findAllNode();
-        if (nodeList.isEmpty()) {
-            return;
+        nodeMap.put(endpoint.getLocalNode(), ASKED);
+
+        addNodeList(endpoint.getRoutingTable().findAllNode());
+
+        try {
+            int totalWaitTime = 0;
+            int waitInterval = 10;
+            while (totalWaitTime < KadConfig.socketTimeout()) {
+                if (!askNodeFinish()) {
+                    wait(waitInterval);
+                    totalWaitTime += waitInterval;
+                } else {
+                    break;
+                }
+            }
+        } catch (InterruptedException ex) {
+            Thread.currentThread().isInterrupted();
+            throw new RuntimeException(ex);
         }
 
-        //todo 并发查询
-        int randomIdx = new Random().nextInt(nodeList.size()-1);
-        Node node = nodeList.get(randomIdx > 0 ? randomIdx : 0);
+        endpoint.getRoutingTable().clearFailedContact(getNodeListByStatus(FAILED));
+    }
 
-        Msg findNodeMsg = new FindNodeMsg(endpoint.getLocalNode(), endpoint.getLocalNode().getId());
-        long sessionId = transportServer.sendMsg(node, findNodeMsg, new FindNodeHandler());
+    @Override
+    protected Msg getMsg() {
+        return findNodeMsg;
+    }
 
-        //todo 清理本地路由表本次ping不通的节点
+    @Override
+    protected Handler getHandler() {
+        return new FindNodeHandler(this);
+    }
+
+    /**
+     * 获取k-closest节点
+     *
+     * @return 节点列表
+     */
+    public List<Node> getClosestNodeList() {
+        return getNodeListByStatus(ASKED, KadConfig.k());
+    }
+
+    /**
+     * 获取全部指定状态的节点
+     *
+     * @param status 节点状态
+     * @return 节点列表
+     */
+    public List<Node> getNodeListByStatus(byte status) {
+        return getNodeListByStatus(status, -1);
     }
 }

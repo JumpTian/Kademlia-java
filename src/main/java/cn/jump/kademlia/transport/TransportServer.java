@@ -2,6 +2,7 @@ package cn.jump.kademlia.transport;
 
 import cn.jump.kademlia.handler.Handler;
 import cn.jump.kademlia.routing.Node;
+import cn.jump.kademlia.utils.Factory;
 import com.google.common.collect.Maps;
 
 import java.io.ByteArrayInputStream;
@@ -56,7 +57,7 @@ public class TransportServer {
         try {
             out.writeLong(sessionId);
             out.writeByte(msg.getType());
-            msg.WriteToStream(out);
+            msg.writeToStream(out);
 
             byte[] data = bout.toByteArray();
             if (data.length > BUFFER_SIZE) {
@@ -74,7 +75,7 @@ public class TransportServer {
         return sessionId;
     }
 
-    private static class Listener implements Runnable {
+    public static class Listener implements Runnable {
 
         private final DatagramSocket datagramSocket;
 

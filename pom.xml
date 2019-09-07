@@ -12,6 +12,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <guava.version>23.0</guava.version>
         <junit.version>4.12</junit.version>
+        <fastjson.version>1.2.58</fastjson.version>
     </properties>
 
     <dependencies>
@@ -36,6 +37,11 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
         </dependency>
     </dependencies>
 

@@ -95,7 +95,7 @@ public class RoutingTable {
      * @return 节点列表
      */
     public List<Node> findClosestNode(Node.Id nodeId, int count) {
-        TreeSet<Node> nodeSet = Sets.newTreeSet();
+        TreeSet<Node> nodeSet = Sets.newTreeSet(new NodeComparator(nodeId));
         nodeSet.addAll(findAllNode());
 
         List<Node> closest = Lists.newArrayList();
@@ -106,5 +106,29 @@ public class RoutingTable {
             closest.add(node);
         }
         return closest;
+    }
+
+    /**
+     * 从路由表中删除无效节点列表
+     *
+     * @param failedNodeList 无效节点列表
+     */
+    public void clearFailedContact(List<Node> failedNodeList) {
+        if (failedNodeList == null || failedNodeList.isEmpty()) {
+            return;
+        }
+        for (Node failNode : failedNodeList) {
+            clearFailedContact(failNode);
+        }
+    }
+
+    /**
+     * 从路由表中删除无效节点
+     *
+     * @param failNode 无效节点
+     */
+    public void clearFailedContact(Node failNode) {
+        int idx = getBucketIdx(failNode);
+        bucketArr[idx].remove(failNode.getId());
     }
 }

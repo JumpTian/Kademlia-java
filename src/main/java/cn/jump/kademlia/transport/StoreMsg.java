@@ -1,5 +1,6 @@
 package cn.jump.kademlia.transport;
 
+import cn.jump.kademlia.dht.Record;
 import cn.jump.kademlia.routing.Node;
 import lombok.Getter;
 
@@ -9,14 +10,14 @@ import java.io.DataOutputStream;
  * @author JumpTian
  */
 @Getter
-public class FindNodeMsg implements Msg {
+public class StoreMsg implements Msg {
 
     private Node originNode;
-    private Node.Id lookupId;
+    private Record record;
 
-    public FindNodeMsg(Node originNode, Node.Id lookupId) {
+    public StoreMsg(Node originNode, Record record) {
         this.originNode = originNode;
-        this.lookupId = lookupId;
+        this.record = record;
     }
 
     @Override

@@ -1,8 +1,10 @@
 package cn.jump.kademlia.routing;
 
 import lombok.Getter;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Random;
@@ -89,6 +91,16 @@ public class Node implements Serializable {
                 arr[i] = (byte) (keySpace[i] ^ cmpId.getKeySpace()[i]);
             }
             return arr;
+        }
+
+        /**
+         * 以十六进制格式返回节点id
+         *
+         * @return 节点id的十六进制表示
+         */
+        public String hexValue() {
+            BigInteger bigInteger = new BigInteger(1, keySpace);
+            return String.format("%0".concat(String.valueOf(keySpace.length << 1)).concat("X"), bigInteger);
         }
 
         @Override

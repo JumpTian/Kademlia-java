@@ -2,6 +2,8 @@ package cn.jump.kademlia.handler;
 
 import cn.jump.kademlia.transport.Msg;
 
+import java.io.IOException;
+
 /**
  * 处理接收到的指令/请求
  *
@@ -14,6 +16,7 @@ public interface Handler {
      *
      * @param inbound 接收消息
      * @param sessionId 会话id
+     * @throws IOException
      */
-    void handle(Msg inbound, int sessionId);
+    void handle(Msg inbound, int sessionId) throws IOException;
 }

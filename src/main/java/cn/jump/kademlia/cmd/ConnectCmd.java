@@ -60,6 +60,6 @@ public class ConnectCmd {
         Msg connectMsg = new ConnectMsg();
         transportServer.sendMsg(bootstrapNode, connectMsg, new ConnectHandler());
 
-        FindNodeCmd.fire(endpoint, transportServer);
+        FindNodeCmd.fire(endpoint, bootstrapNode.getId(), transportServer);
     }
 }
