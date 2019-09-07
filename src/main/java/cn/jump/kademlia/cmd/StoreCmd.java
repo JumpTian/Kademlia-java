@@ -3,10 +3,10 @@ package cn.jump.kademlia.cmd;
 import cn.jump.kademlia.Endpoint;
 import cn.jump.kademlia.dht.Record;
 import cn.jump.kademlia.dht.Table;
-import cn.jump.kademlia.handler.Handler;
+import cn.jump.kademlia.handler.AbstractHandler;
 import cn.jump.kademlia.handler.StoreHandler;
 import cn.jump.kademlia.routing.Node;
-import cn.jump.kademlia.transport.Msg;
+import cn.jump.kademlia.transport.AbstractMsg;
 import cn.jump.kademlia.transport.StoreMsg;
 import cn.jump.kademlia.transport.TransportServer;
 
@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class StoreCmd extends AbstractCmd {
 
-    private final Msg storeMsg;
+    private final AbstractMsg storeMsg;
     private final Record record;
     private final Table table;
 
@@ -53,12 +53,22 @@ public class StoreCmd extends AbstractCmd {
     }
 
     @Override
-    protected Msg getMsg() {
+    protected AbstractMsg getMsg() {
         return storeMsg;
     }
 
     @Override
-    protected Handler getHandler() {
+    protected AbstractHandler getHandler() {
         return new StoreHandler();
+    }
+
+    /**
+     * 返回实际成功存储指定记录的节点数量
+     *
+     * @return 节点数量
+     */
+    public int getStoredNodeCount() {
+        //todo
+        return 1;
     }
 }

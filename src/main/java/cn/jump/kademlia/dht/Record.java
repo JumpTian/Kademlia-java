@@ -10,26 +10,11 @@ import cn.jump.kademlia.routing.Node;
 public interface Record {
 
     /**
-     * 获取DHT中的key，查找通过这个key在kad网络中
-     * 进行路由
+     * 通过这个key在kad网络中进行路由
      *
      * @return 节点id
      */
     Node.Id getNodeId();
-
-    /**
-     * 记录的所有者id
-     *
-     * @return owner id
-     */
-    String getOwnerId();
-
-    /**
-     * 记录类型
-     *
-     * @return 类型
-     */
-    String getType();
 
     /**
      * 记录的创建时间

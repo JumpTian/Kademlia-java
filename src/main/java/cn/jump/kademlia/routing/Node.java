@@ -1,10 +1,13 @@
 package cn.jump.kademlia.routing;
 
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Random;
@@ -31,6 +34,14 @@ public class Node implements Serializable {
     public Node(Id nodeId, InetSocketAddress address) {
         this.id = nodeId;
         this.address = address;
+    }
+
+    public Node(DataInputStream in) throws IOException {
+        this.id = new Id(in);
+
+        byte[] ip = new byte[4];
+        in.readFully(ip);
+        this.address = new InetSocketAddress(InetAddress.getByAddress(ip), in.readInt());
     }
 
     /**
@@ -62,6 +73,14 @@ public class Node implements Serializable {
         return distance;
     }
 
+    public void writeToStream(DataOutputStream out) throws IOException {
+        out.write(getId().getKeySpace());
+        // ^_^
+        byte[] addressArr = address.getAddress().getAddress();
+        out.write(addressArr);
+        out.write(address.getPort());
+    }
+
     /**
      * 节点id
      */
@@ -77,6 +96,12 @@ public class Node implements Serializable {
         public Id() {
             keySpace = new byte[SPACE_BYTE];
             new Random().nextBytes(keySpace);
+        }
+
+        public Id(DataInputStream in) throws IOException {
+            byte[] data = new byte[SPACE_BYTE];
+            in.readFully(data);
+            this.keySpace = data;
         }
 
         /**

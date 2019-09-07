@@ -3,10 +3,10 @@ package cn.jump.kademlia.cmd;
 import cn.jump.kademlia.Endpoint;
 import cn.jump.kademlia.KadConfig;
 import cn.jump.kademlia.handler.FindNodeHandler;
-import cn.jump.kademlia.handler.Handler;
+import cn.jump.kademlia.handler.AbstractHandler;
 import cn.jump.kademlia.routing.Node;
 import cn.jump.kademlia.transport.FindNodeMsg;
-import cn.jump.kademlia.transport.Msg;
+import cn.jump.kademlia.transport.AbstractMsg;
 import cn.jump.kademlia.transport.TransportServer;
 import lombok.Getter;
 
@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public class FindNodeCmd extends AbstractCmd {
 
-    private final Msg findNodeMsg;
+    private final AbstractMsg findNodeMsg;
 
     private FindNodeCmd(Endpoint endpoint, Node.Id lookupId, TransportServer transportServer) {
        super(endpoint, lookupId, transportServer);
@@ -60,12 +60,12 @@ public class FindNodeCmd extends AbstractCmd {
     }
 
     @Override
-    protected Msg getMsg() {
+    protected AbstractMsg getMsg() {
         return findNodeMsg;
     }
 
     @Override
-    protected Handler getHandler() {
+    protected AbstractHandler getHandler() {
         return new FindNodeHandler(this);
     }
 

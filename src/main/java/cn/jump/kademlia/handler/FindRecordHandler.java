@@ -1,13 +1,13 @@
 package cn.jump.kademlia.handler;
 
 import cn.jump.kademlia.cmd.FindRecordCmd;
+import cn.jump.kademlia.transport.AbstractMsg;
 import cn.jump.kademlia.transport.FindRecordMsg;
-import cn.jump.kademlia.transport.Msg;
 
 /**
  * @author JumpTian
  */
-public class FindRecordHandler implements Handler {
+public class FindRecordHandler extends AbstractHandler {
 
     private final FindRecordCmd findRecordCmd;
 
@@ -16,7 +16,7 @@ public class FindRecordHandler implements Handler {
     }
 
     @Override
-    public void handle(Msg inbound, int sessionId) {
+    public void handle(AbstractMsg inbound, int sessionId) {
         if (findRecordCmd.getRecord() != null) {
             return;
         }

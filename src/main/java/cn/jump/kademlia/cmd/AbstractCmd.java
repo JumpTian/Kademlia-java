@@ -2,10 +2,10 @@ package cn.jump.kademlia.cmd;
 
 import cn.jump.kademlia.Endpoint;
 import cn.jump.kademlia.KadConfig;
-import cn.jump.kademlia.handler.Handler;
+import cn.jump.kademlia.handler.AbstractHandler;
 import cn.jump.kademlia.routing.Node;
 import cn.jump.kademlia.routing.NodeComparator;
-import cn.jump.kademlia.transport.Msg;
+import cn.jump.kademlia.transport.AbstractMsg;
 import cn.jump.kademlia.transport.TransportServer;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -88,14 +88,14 @@ public abstract class AbstractCmd {
      *
      * @return 请求消息
      */
-    protected abstract Msg getMsg();
+    protected abstract AbstractMsg getMsg();
 
     /**
      * 获取请求响应回调处理器
      *
      * @return 响应处理器
      */
-    protected abstract Handler getHandler();
+    protected abstract AbstractHandler getHandler();
 
     /**
      * 获取最多指定个数的指定状态的节点

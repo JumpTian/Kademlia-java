@@ -3,13 +3,15 @@ package cn.jump.kademlia.transport;
 import cn.jump.kademlia.routing.Node;
 import lombok.Getter;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * @author JumpTian
  */
 @Getter
-public class FindNodeMsg implements Msg {
+public class FindNodeMsg extends AbstractMsg {
 
     private Node originNode;
     private Node.Id lookupId;
@@ -19,13 +21,20 @@ public class FindNodeMsg implements Msg {
         this.lookupId = lookupId;
     }
 
-    @Override
-    public byte getType() {
-        return 0;
+    public FindNodeMsg(DataInputStream in) throws IOException {
+        this.originNode = new Node(in);
+        this.lookupId = new Node.Id(in);
     }
 
     @Override
-    public void writeToStream(DataOutputStream out) {
+    public byte getType() {
+        return TYPE_FIND_NODE;
+    }
 
+    @Override
+    public void writeToStream(DataOutputStream out) throws IOException {
+        originNode.writeToStream(out);
+
+        out.write(lookupId.getKeySpace());
     }
 }

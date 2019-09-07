@@ -4,9 +4,10 @@ import cn.jump.kademlia.Endpoint;
 import cn.jump.kademlia.KadConfig;
 import cn.jump.kademlia.dht.Record;
 import cn.jump.kademlia.handler.FindRecordHandler;
-import cn.jump.kademlia.handler.Handler;
+import cn.jump.kademlia.handler.AbstractHandler;
+import cn.jump.kademlia.transport.AbstractMsg;
+import cn.jump.kademlia.transport.FindParam;
 import cn.jump.kademlia.transport.FindRecordMsg;
-import cn.jump.kademlia.transport.Msg;
 import cn.jump.kademlia.transport.TransportServer;
 import lombok.Data;
 
@@ -20,17 +21,18 @@ import java.io.IOException;
 @Data
 public class FindRecordCmd extends AbstractCmd {
 
-    private final Msg findRecordMsg;
+    private final AbstractMsg findRecordMsg;
 
     private Record record;
 
-    private FindRecordCmd(Endpoint endpoint, TransportServer transportServer) {
-        super(endpoint, null, transportServer);
-        this.findRecordMsg = new FindRecordMsg(endpoint.getLocalNode());
+    private FindRecordCmd(Endpoint endpoint, FindParam findParam, TransportServer transportServer) {
+        super(endpoint, findParam.getKey(), transportServer);
+        this.findRecordMsg = new FindRecordMsg(endpoint.getLocalNode(), findParam);
     }
 
-    public static FindRecordCmd fire(Endpoint endpoint, TransportServer transportServer) throws IOException {
-        FindRecordCmd cmd = new FindRecordCmd(endpoint, transportServer);
+    public static FindRecordCmd fire(Endpoint endpoint, FindParam findParam,
+                                     TransportServer transportServer) throws IOException {
+        FindRecordCmd cmd = new FindRecordCmd(endpoint, findParam, transportServer);
         cmd.execute();
         return cmd;
     }
@@ -58,12 +60,12 @@ public class FindRecordCmd extends AbstractCmd {
     }
 
     @Override
-    protected Msg getMsg() {
+    protected AbstractMsg getMsg() {
         return findRecordMsg;
     }
 
     @Override
-    protected Handler getHandler() {
+    protected AbstractHandler getHandler() {
         return new FindRecordHandler(this);
     }
 }

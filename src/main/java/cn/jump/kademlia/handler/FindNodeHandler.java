@@ -4,7 +4,7 @@ import static cn.jump.kademlia.cmd.AbstractCmd.ASKED;
 import cn.jump.kademlia.cmd.FindNodeCmd;
 import cn.jump.kademlia.routing.Node;
 import cn.jump.kademlia.transport.FindNodeReply;
-import cn.jump.kademlia.transport.Msg;
+import cn.jump.kademlia.transport.AbstractMsg;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,16 +14,16 @@ import java.util.List;
  *
  * @author JumpTian
  */
-public class FindNodeHandler implements Handler {
+public class FindNodeHandler extends AbstractHandler {
 
-    private FindNodeCmd findNodeCmd;
+    private final FindNodeCmd findNodeCmd;
 
     public FindNodeHandler(FindNodeCmd findNodeCmd) {
         this.findNodeCmd = findNodeCmd;
     }
 
     @Override
-    public void handle(Msg inbound, int sessionId) throws IOException {
+    public void handle(AbstractMsg inbound, int sessionId) throws IOException {
         if (!(inbound instanceof FindNodeReply)) {
             return;
         }

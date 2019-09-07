@@ -1,14 +1,14 @@
 package cn.jump.kademlia.handler;
 
-import cn.jump.kademlia.transport.Msg;
+import cn.jump.kademlia.transport.AbstractMsg;
 
 /**
  * @author JumpTian
  */
-public class StoreHandler implements Handler {
+public class StoreHandler extends AbstractHandler {
 
     @Override
-    public void handle(Msg inbound, int sessionId) {
+    public void handle(AbstractMsg inbound, int sessionId) {
 
     }
 }

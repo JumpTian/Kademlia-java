@@ -1,6 +1,7 @@
 package cn.jump.kademlia.dht;
 
 import cn.jump.kademlia.routing.Node;
+import cn.jump.kademlia.transport.FindParam;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -8,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,13 +23,36 @@ public class Table {
 
     private final Map<Node.Id, List<Record>> recordMap = new ConcurrentHashMap<>();
 
-    public Record get(Node.Id nodeId) {
-        if (recordMap.containsKey(nodeId)) {
-            for (Record record : recordMap.get(nodeId)) {
-                //todo 检查是否是符合
+    /**
+     * 根据指定条件获取记录，如果没有找到，则抛出NoSuchElementException
+     * 异常。
+     *
+     * @param findParam 查询条件
+     * @return 记录
+     */
+    public Record get(FindParam findParam) {
+        if (recordMap.containsKey(findParam.getKey())) {
+            for (Record record : recordMap.get(findParam.getKey())) {
+                //todo 检查record是否是符合param
+                return record;
             }
         }
-        throw new IllegalStateException("Not found record");
+        throw new NoSuchElementException("Not found record in table");
+    }
+
+    /**
+     * 根据指定条件获取记录，如果找到返回true，否则返回false
+     *
+     * @param findParam 查询条件
+     * @return 是否找到
+     */
+    public boolean contains(FindParam findParam) {
+        try {
+            get(findParam);
+        } catch (Exception ignore) {
+            return false;
+        }
+        return true;
     }
 
     public boolean store(Record record) throws IOException {

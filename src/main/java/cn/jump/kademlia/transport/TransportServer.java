@@ -1,9 +1,9 @@
 package cn.jump.kademlia.transport;
 
-import cn.jump.kademlia.handler.Handler;
+import cn.jump.kademlia.handler.AbstractHandler;
 import cn.jump.kademlia.routing.Node;
-import cn.jump.kademlia.utils.Factory;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 /**
  * @author JumpTian
  */
+@Getter
 public class TransportServer {
 
     private static final int BUFFER_SIZE = 64*1024;
@@ -28,7 +29,7 @@ public class TransportServer {
     private final DatagramSocket datagramSocket;
 
     private static volatile boolean isRunning;
-    private static Map<Long, Handler> handlerMap = Maps.newConcurrentMap();
+    private static Map<Long, AbstractHandler> handlerMap = Maps.newConcurrentMap();
     private static ExecutorService QUEUE = Executors.newFixedThreadPool(1);
 
     private TransportServer(int port) throws SocketException {
@@ -37,12 +38,12 @@ public class TransportServer {
 
     public static TransportServer newInstance(int port) throws SocketException {
         TransportServer transportServer = new TransportServer(port);
-        QUEUE.submit(new Listener(transportServer.datagramSocket));
+        QUEUE.submit(new Listener(transportServer));
         isRunning = true;
         return transportServer;
     }
 
-    public long sendMsg(Node target, Msg msg, Handler handler) throws IOException {
+    public long sendMsg(Node target, AbstractMsg msg, AbstractHandler handler) throws IOException {
         if (!isRunning) {
             throw new IllegalStateException("TransportServer is down");
         }
@@ -77,14 +78,15 @@ public class TransportServer {
 
     public static class Listener implements Runnable {
 
-        private final DatagramSocket datagramSocket;
+        private final TransportServer transportServer;
 
-        public Listener(DatagramSocket datagramSocket) {
-            this.datagramSocket = datagramSocket;
+        public Listener(TransportServer transportServer) {
+            this.transportServer = transportServer;
         }
 
         @Override
         public void run() {
+            DatagramSocket datagramSocket = transportServer.getDatagramSocket();
             try {
                 while (isRunning) {
                     try {
@@ -99,15 +101,15 @@ public class TransportServer {
                         int sessionId = in.readInt();
                         byte msgType = in.readByte();
 
-                        Msg msg = Factory.createMessage(msgType, in);
+                        AbstractMsg msg = AbstractMsg.createMsg(msgType, in);
 
-                        Handler handler;
+                        AbstractHandler handler;
                         if (handlerMap.containsKey(sessionId)) {
                             synchronized (this) {
                                 handler = handlerMap.remove(sessionId);
                             }
                         } else {
-                            handler = Factory.createReceiver(msgType, this);
+                            handler = AbstractHandler.createHandler(msgType, transportServer);
                         }
 
                         if (handler != null) {
