@@ -1,6 +1,8 @@
 package cn.jump.kademlia.dht;
 
 /**
+ * 存储记录的序列化器
+ *
  * @author JumpTian
  */
 public interface Serializer<T> {

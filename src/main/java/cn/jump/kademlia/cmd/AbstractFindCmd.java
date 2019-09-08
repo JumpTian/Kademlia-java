@@ -19,10 +19,13 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 节点路由查询指令抽象，封装了相关逻辑，作为FIND_NODE以
+ * 及FIND_RECORD指令的公共父类。
+ *
  * @author JumpTian
  */
 @Getter
-public abstract class AbstractCmd {
+public abstract class AbstractFindCmd implements Cmd {
 
     public static final byte UNASKED = 0;
     public static final byte AWAITING = 1;
@@ -36,7 +39,7 @@ public abstract class AbstractCmd {
     protected final Comparator comparator;
     protected final Map<Long, Node> msgTransitingMap = new ConcurrentHashMap<>();
 
-    protected AbstractCmd(Endpoint endpoint, Node.Id lookupId, TransportServer transportServer) {
+    protected AbstractFindCmd(Endpoint endpoint, Node.Id lookupId, TransportServer transportServer) {
         this.endpoint = endpoint;
         this.transportServer = transportServer;
         this.comparator = new NodeComparator(lookupId);

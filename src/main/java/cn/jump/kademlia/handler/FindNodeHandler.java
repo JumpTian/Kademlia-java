@@ -1,6 +1,6 @@
 package cn.jump.kademlia.handler;
 
-import static cn.jump.kademlia.cmd.AbstractCmd.ASKED;
+import static cn.jump.kademlia.cmd.AbstractFindCmd.ASKED;
 import cn.jump.kademlia.cmd.FindNodeCmd;
 import cn.jump.kademlia.routing.Node;
 import cn.jump.kademlia.transport.FindNodeReply;

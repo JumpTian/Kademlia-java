@@ -1,5 +1,7 @@
 package cn.jump.kademlia.routing;
 
+import cn.jump.kademlia.KadConfig;
+import cn.jump.kademlia.cmd.PingCmd;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 
@@ -31,12 +33,13 @@ public class Bucket {
 
     private final TreeSet<Contact> contactSet = Sets.newTreeSet();
 
-    public Bucket() {
-
-    }
-
+    /**
+     * 添加一个路由节点到bucket中
+     *
+     * @param node 节点
+     */
     public void insert(Node node) {
-
+        insert(new Contact(node));
     }
 
     /**
@@ -46,18 +49,26 @@ public class Bucket {
      */
     public void insert(Contact contact) {
         if (contactSet.contains(contact)) {
-            // 如果contact中节点已经在本地k-bucket中，则重新设置最近访问时间，
-            // 并按照最近访问时间时间排序
             contact = remove(contact.getNode().getId());
             contact.setLastAccess();
+            // 按照最近访问时间时间排序
             contactSet.add(contact);
         } else {
-            // todo
-            // 否则，ping一下列表最上（旧）的一个节点
-            // r如果ping通了，将旧节点放到列表最底，并丢弃新节点
-            // 如果ping不同，删除旧节点，并将新节点放到列表
-            // 从而保证了任意节点的加入和离开都不影响整体网络
-            // 如果当前bucket已满
+            if (contactSet.size() >= KadConfig.k()) {
+                // ping一下列表最旧的一个节点
+                Contact pingContact = contactSet.pollFirst();
+                try {
+                    PingCmd pingCmd = PingCmd.fire(pingContact.getNode());
+                    if (pingCmd.isAck()) {
+                        //todo 如果ping通了，将旧节点放到列表最底，并丢弃新节点
+                    } else {
+                        //todo 否则删除旧节点，并将新节点放到列表
+                    }
+                } catch (Exception ignore) {
+                }
+            } else {
+                contactSet.add(contact);
+            }
         }
     }
 

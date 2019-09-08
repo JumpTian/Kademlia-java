@@ -2,9 +2,9 @@ package cn.jump.kademlia.cmd;
 
 import cn.jump.kademlia.Endpoint;
 import cn.jump.kademlia.KadConfig;
-import cn.jump.kademlia.dht.Record;
-import cn.jump.kademlia.handler.FindRecordHandler;
+import cn.jump.kademlia.dht.KadRecord;
 import cn.jump.kademlia.handler.AbstractHandler;
+import cn.jump.kademlia.handler.FindRecordHandler;
 import cn.jump.kademlia.transport.AbstractMsg;
 import cn.jump.kademlia.transport.FindParam;
 import cn.jump.kademlia.transport.FindRecordMsg;
@@ -19,11 +19,11 @@ import java.io.IOException;
  * @author JumpTian
  */
 @Data
-public class FindRecordCmd extends AbstractCmd {
+public class FindRecordCmd extends AbstractFindCmd {
 
     private final AbstractMsg findRecordMsg;
 
-    private Record record;
+    private KadRecord record;
 
     private FindRecordCmd(Endpoint endpoint, FindParam findParam, TransportServer transportServer) {
         super(endpoint, findParam.getKey(), transportServer);
@@ -37,7 +37,8 @@ public class FindRecordCmd extends AbstractCmd {
         return cmd;
     }
 
-    private void execute() throws IOException {
+    @Override
+    public void execute() throws IOException {
         nodeMap.put(endpoint.getLocalNode(), ASKED);
 
         addNodeList(endpoint.getRoutingTable().findAllNode());

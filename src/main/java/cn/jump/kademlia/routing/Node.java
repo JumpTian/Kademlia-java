@@ -73,6 +73,12 @@ public class Node implements Serializable {
         return distance;
     }
 
+    /**
+     * 将当前节点序列化到指定输出流中
+     *
+     * @param out 输出流
+     * @throws IOException
+     */
     public void writeToStream(DataOutputStream out) throws IOException {
         out.write(getId().getKeySpace());
         // ^_^

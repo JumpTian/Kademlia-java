@@ -31,9 +31,9 @@ public abstract class AbstractHandler {
     public static AbstractHandler createHandler(byte type, TransportServer transportServer) {
         switch (type) {
             case AbstractMsg.TYPE_CONNECT:
-                return new ConnectHandler();
+                //return new ConnectHandler(this);
             case AbstractMsg.TYPE_STORE:
-                return new StoreHandler();
+                //return new StoreHandler();
             default:
                 throw new IllegalStateException("Found invalid handler type");
         }

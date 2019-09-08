@@ -1,7 +1,7 @@
 package cn.jump.kademlia.cmd;
 
 import cn.jump.kademlia.Endpoint;
-import cn.jump.kademlia.dht.Record;
+import cn.jump.kademlia.dht.KadRecord;
 import cn.jump.kademlia.dht.Table;
 import cn.jump.kademlia.handler.AbstractHandler;
 import cn.jump.kademlia.handler.StoreHandler;
@@ -19,33 +19,34 @@ import java.util.List;
  *
  * @author JumpTian
  */
-public class StoreCmd extends AbstractCmd {
+public class StoreCmd extends AbstractFindCmd {
 
     private final AbstractMsg storeMsg;
-    private final Record record;
+    private final KadRecord record;
     private final Table table;
 
-    private StoreCmd(Endpoint endpoint, Record record, Table table, TransportServer transportServer) {
+    private StoreCmd(Endpoint endpoint, KadRecord record, Table table, TransportServer transportServer) {
         super(endpoint, record.getNodeId(), transportServer);
         this.storeMsg = new StoreMsg(endpoint.getLocalNode(), record);
         this.record = record;
         this.table = table;
     }
 
-    public static StoreCmd fire(Endpoint endpoint, Record record,
+    public static StoreCmd fire(Endpoint endpoint, KadRecord record,
                             Table table, TransportServer transportServer) throws IOException {
         StoreCmd cmd = new StoreCmd(endpoint, record, table, transportServer);
         cmd.execute();
         return cmd;
     }
 
-    private void execute() throws IOException {
+    @Override
+    public void execute() throws IOException {
         FindNodeCmd findNodeCmd = FindNodeCmd.fire(endpoint, record.getNodeId(), transportServer);
         List<Node> nodeList = findNodeCmd.getClosestNodeList();
 
         for (Node node : nodeList) {
             if (node.getId().equals(endpoint.getLocalNode().getId())) {
-                table.store(record);
+                table.put(record);
             } else {
                 transportServer.sendMsg(node, storeMsg, new StoreHandler());
             }

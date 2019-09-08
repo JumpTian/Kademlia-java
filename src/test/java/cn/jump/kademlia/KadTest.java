@@ -1,7 +1,7 @@
 package cn.jump.kademlia;
 
-import cn.jump.kademlia.dht.Record;
-import cn.jump.kademlia.dht.RecordImpl;
+import cn.jump.kademlia.dht.DefaultKadRecord;
+import cn.jump.kademlia.dht.KadRecord;
 import cn.jump.kademlia.routing.Node;
 import cn.jump.kademlia.transport.FindParam;
 import org.junit.Assert;
@@ -15,16 +15,18 @@ public class KadTest {
 
     private Node.Id nodeId;
     private Endpoint endpoint;
+    private String ownerId;
 
     @Before
     public void setup() throws Exception {
+        ownerId = "Jump-owner";
         nodeId = new Node.Id();
-        endpoint = new Endpoint(nodeId, 88888);
+        endpoint = Endpoint.newInstance(nodeId, ownerId, 88888);
     }
 
     @Test
     public void testBootstrap() throws Exception {
-        Endpoint peerEndpoint = new Endpoint(new Node.Id(), 99999);
+        Endpoint peerEndpoint = Endpoint.newInstance(nodeId, ownerId, 88888);
         endpoint.bootstrap(peerEndpoint.getLocalNode());
 
         Assert.assertNotNull(peerEndpoint);
@@ -33,18 +35,18 @@ public class KadTest {
 
     @Test
     public void testStore() throws Exception {
-        Endpoint peerEndpoint = new Endpoint(new Node.Id(), 99999);
+        Endpoint peerEndpoint = Endpoint.newInstance(nodeId, ownerId, 88888);
         endpoint.bootstrap(peerEndpoint.getLocalNode());
 
         String data = "China";
-        Record record = new RecordImpl(nodeId, data);
+        KadRecord record = new DefaultKadRecord(nodeId, ownerId, data);
         endpoint.put(record);
     }
 
     @Test
     public void testGet() throws Exception {
         Node.Id peerId = new Node.Id();
-        Endpoint peerEndpoint = new Endpoint(peerId, 99999);
+        Endpoint peerEndpoint = Endpoint.newInstance(nodeId, ownerId, 88888);
         endpoint.bootstrap(peerEndpoint.getLocalNode());
 
         endpoint.get(new FindParam.Builder().key(peerId).build());

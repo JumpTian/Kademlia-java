@@ -1,7 +1,7 @@
 package cn.jump.kademlia.transport;
 
 import cn.jump.kademlia.dht.JsonSerializer;
-import cn.jump.kademlia.dht.Record;
+import cn.jump.kademlia.dht.KadRecord;
 import cn.jump.kademlia.routing.Node;
 import lombok.Getter;
 
@@ -17,7 +17,7 @@ public class FindRecordMsg extends AbstractMsg {
 
     private final Node originNode;
     private final FindParam findParam;
-    private Record record;
+    private KadRecord record;
 
     public FindRecordMsg(Node originNode, FindParam findParam) {
         this.originNode = originNode;
